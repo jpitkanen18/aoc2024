@@ -137,10 +137,6 @@ std::vector<std::string> remapFiles(std::vector<std::string>*unpacked) {
 						}
 					}
 				}
-				// for(auto l : remapped) {
-				// printf("%s", l.c_str());
-				// }
-				// printf("\n");
 			}
 		}
 		
@@ -156,8 +152,6 @@ int main(void) {
 	std::vector<std::string> remappedP2 = remapFiles(&unpacked);
 	long chcksum = checksum(&remapped);
 	long chcksum2 = checksum(&remappedP2);
-	// printf("Unmapped: %s\n", unpacked.c_str());
-	// printf("Remapped: %s\n", remapped.c_str()); 
 	printf("Checksum: %ld\n", chcksum);
 	printf("Checksum P2: %ld\n", chcksum2);
 	return 0;
