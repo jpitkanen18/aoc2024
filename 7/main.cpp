@@ -12,6 +12,9 @@
 #include <functional>
 #include <string.h>
 #include <cmath>
+#include <thread>
+#include <chrono>
+
 
 using StringVector = std::vector<std::string>;
 using Equations = std::map<long, std::vector<long>>;
@@ -62,42 +65,95 @@ Equations getEquations(StringVector *lines) {
 	return equations;
 }
 
-long getEquationsTotal(Equations *equations) {
-	long equationsTotal = 0;
-	for(auto eq : *equations) {
-		long target = eq.first;
-		std::vector<long> values = eq.second;
-		for(int i = 0; i < pow(2, equations->size()); i++) {
-			long total = 0;
-			for(int j = 0; j < values.size(); j++) {
-				if((i & (1 << j)) != 0)
-					total *= values.at(j);
-				else
-					total += values.at(j);
+void processRow(std::pair<long, std::vector<long>> eq, std::shared_ptr<unsigned long> accP1, std::shared_ptr<unsigned long> accP2) {
+	long target = eq.first;
+	std::vector<long> values = eq.second;
+	std::vector<std::string> stringValues;
+	for(auto val : values) {
+		stringValues.push_back(std::to_string(val));
+	}
+	bool foundPart2 = false;
+	long long pow = (long long)std::pow(2, values.size());
+	for(long multiply = 0; multiply < pow; multiply++) {
+		long total = 0;
+		for(long x = 0; x < values.size(); x++) {
+			if((multiply & (1 << x)) != 0)
+				total *= values.at(x);
+			else
+				total += values.at(x);
+		}
+		if (total == target) {
+			*accP1 += target;
+			if(!foundPart2)
+				*accP2 += target;
+			break;
+		}
+		for(long concat = 0; concat < pow; concat++) {
+			long totalP2 = 0;
+			for(int x = 0; x < values.size(); x++) {
+				if((multiply & (1 << x)) != 0)
+					totalP2 *= values.at(x);
+				else if((concat & (1 << x)) != 0) {
+					totalP2 = totalP2 * (long)std::pow(10, stringValues.at(x).size()) + values.at(x);
+				} else
+					totalP2 += values.at(x);
+				if (totalP2 > target) {
+					break;
+				}
 			}
-			if (total == target) {
-				equationsTotal += target;
-				break;
-			} else if (total > target) {
+			if(totalP2 == target) {
+				*accP2 += totalP2;
+				foundPart2 = true;
 				break;
 			}
 		}
 	}
-	return equationsTotal;
 }
 
+void getEquationsTotal(Equations *equations, std::shared_ptr<unsigned long> accP1, std::shared_ptr<unsigned long> accP2) {
+	long equationsSize = equations->size();
+	long accumulator = 0;
+	std::vector<std::thread> threads;
+	for (auto it = std::begin(*equations); it != std::end(*equations); it++) {
+		threads.push_back(std::thread(processRow, *it, std::ref(accP1), std::ref(accP2)));
+		if (threads.size() == equations->size()) {
+            for (auto& t : threads) {
+				accumulator++;
+				// printf("\e[1;1H\e[2J");
+				// printf("Equations done: %ld/%ld\n", accumulator, equationsSize);
+				// printf("\nEquations total: %ld\n", *accP1);
+				// printf("Calibration total: %ld\n", *accP2);
+                t.join();
+            }
+            threads.clear();
+        }
+	}
+	for (auto& t : threads) {
+		accumulator++;
+		// printf("\e[1;1H\e[2J");
+		// printf("Equations done: %ld/%ld\n", accumulator, equationsSize);
+		// printf("\nEquations total: %ld\n", *accP1);
+		// printf("Calibration total: %ld\n", *accP2);
+    	t.join();
+	}
+}
 
 int main(void) {
+	auto t_start = std::chrono::high_resolution_clock::now();
 	StringVector lines = loadFile("input.txt");
 	Equations eqs = getEquations(&lines);
-	for(auto eq : eqs) {
-		printf("Equation: %ld : ", eq.first);
-		for(auto num : eq.second) {
-			printf("%ld, ", num);
-		}
-		printf("\n");
-	}
-	long eqTotal = getEquationsTotal(&eqs);
-	printf("Equations total: %ld\n", eqTotal);
+	std::shared_ptr<unsigned long> eqTotal(static_cast<unsigned long*>(malloc(sizeof(unsigned long))), free);
+	std::shared_ptr<unsigned long> calTotal(static_cast<unsigned long*>(malloc(sizeof(unsigned long))), free);
+	*eqTotal = 0;
+	*calTotal = 0;
+	getEquationsTotal(&eqs, eqTotal, calTotal);
+	printf("\e[1;1H\e[2J");
+	printf("\nEquations total: %ld\n", *eqTotal);
+	printf("Calibration total: %ld\n", *calTotal);
+	auto t_end = std::chrono::high_resolution_clock::now();
+	double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end-t_start).count();
+	long minutes = elapsed_time_ms / 1000 / 60;
+	long seconds = (elapsed_time_ms - (minutes * 1000 * 60)) / 1000;
+	std::cout << "Elapsed time: " << minutes << " minutes, " << seconds << " seconds" << std::endl;;
 	return 0;
 }

@@ -50,6 +50,18 @@
 		"typeinfo": "cpp",
 		"bitset": "cpp",
 		"ctime": "cpp",
-		"regex": "cpp"
+		"regex": "cpp",
+		"ratio": "cpp",
+		"semaphore": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp",
+		"charconv": "cpp",
+		"chrono": "cpp",
+		"format": "cpp",
+		"iomanip": "cpp",
+		"span": "cpp",
+		"variant": "cpp",
+		"condition_variable": "cpp",
+		"mutex": "cpp"
 	}
 }
