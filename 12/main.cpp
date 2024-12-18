@@ -125,11 +125,11 @@ class Gardener {
 			long total = 0;
 			for(auto plot : plots) {
 				long area = plot.size();
-				printf("Area: %ld\n", area);
-				long perimiter = GetPerimiter(&plot); // Part 1
-				printf("Perimiter: %ld\n", perimiter);
+				// printf("Area: %ld\n", area);
+				//long perimiter = GetPerimiter(&plot); // Part 1
+				// printf("Perimiter: %ld\n", perimiter);
 				long sides = GetSides(&plot); // Part 2
-				printf("Sides: %ld\n\n", sides);
+				// printf("Sides: %ld\n\n", sides);
 				total += area * sides;
 			}
 			return total;

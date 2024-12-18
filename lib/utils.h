@@ -14,6 +14,9 @@ using StringVector = std::vector<std::string>;
 class Utils {
 	public:
 		static StringVector loadFile(std::string filePath) {
+			std::ifstream test(filePath);
+			if(!test)
+				throw std::exception();
 			std::ifstream inFile(filePath);
 			StringVector fileAsString;
 
