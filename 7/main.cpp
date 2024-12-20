@@ -14,6 +14,7 @@
 #include <cmath>
 #include <thread>
 #include <chrono>
+#include "../lib/timer.h"
 
 
 using StringVector = std::vector<std::string>;
@@ -139,7 +140,8 @@ void getEquationsTotal(Equations *equations, std::shared_ptr<unsigned long> accP
 }
 
 int main(void) {
-	auto t_start = std::chrono::high_resolution_clock::now();
+	Timer timer = Timer();
+	timer.Start();
 	StringVector lines = loadFile("input.txt");
 	Equations eqs = getEquations(&lines);
 	std::shared_ptr<unsigned long> eqTotal(static_cast<unsigned long*>(malloc(sizeof(unsigned long))), free);
@@ -150,10 +152,6 @@ int main(void) {
 	printf("\e[1;1H\e[2J");
 	printf("\nEquations total: %ld\n", *eqTotal);
 	printf("Calibration total: %ld\n", *calTotal);
-	auto t_end = std::chrono::high_resolution_clock::now();
-	double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end-t_start).count();
-	long minutes = elapsed_time_ms / 1000 / 60;
-	long seconds = (elapsed_time_ms - (minutes * 1000 * 60)) / 1000;
-	std::cout << "Elapsed time: " << minutes << " minutes, " << seconds << " seconds" << std::endl;;
+	timer.End();
 	return 0;
 }
