@@ -12,16 +12,9 @@
 #include <set>
 #include "../lib/utils.h"
 
-using StringVector = std::vector<std::string>;
-
-struct vec2 {
-	int x, y;
-	vec2(int x, int y) : x(x), y(y) {}
-};
-
 class Pathfinder {
 	StringVector Lines;
-	std::vector<vec2> ZeroIndices;
+	std::vector<Vec2> ZeroIndices;
 	int MapWidth;
 	int MapHeight;
 	std::vector<std::array<int, 2>> Directions;
@@ -34,34 +27,34 @@ class Pathfinder {
 			ZeroIndices = FindZeroIndices();
 		}
 
-		bool isValid(vec2 *pos) {
+		bool isValid(Vec2 *pos) {
 			return pos->x >= 0 && pos->x < MapWidth && pos->y >= 0 && pos->y < MapHeight; 
 		}
 
-		std::vector<vec2> FindZeroIndices() {
-			std::vector<vec2> zeroIndices;
+		std::vector<Vec2> FindZeroIndices() {
+			std::vector<Vec2> zeroIndices;
 			for (int i = 0; i < Lines.size(); i++) {
 				std::string line = Lines[i];
 				for (int j = 0; j < line.size(); j++) {
 					if (line.at(j) - 48 == 0) {
-						zeroIndices.push_back(vec2(j, i));
+						zeroIndices.push_back(Vec2(j, i));
 					}
 				}
 			}
 			return zeroIndices;
 		}
 
-		long TrailHeadScore(vec2 *start, long prev,long trail, long *nextId, std::vector<std::vector<bool>> *maxHeightVisited, std::vector<std::vector<vec2>> *distinctTrails) {
+		long TrailHeadScore(Vec2 *start, long prev,long trail, long *nextId, std::vector<std::vector<bool>> *maxHeightVisited, std::vector<std::vector<Vec2>> *distinctTrails) {
 			long score = 0;
 			long curr = Lines[start->y][start->x] - 48;
 			if(curr - prev == 1) {
 				if(trail >= distinctTrails->size()) {
 					for(int i = distinctTrails->size(); i < trail + 1; i++) {
-						distinctTrails->push_back(std::vector<vec2>());
+						distinctTrails->push_back(std::vector<Vec2>());
 					}
 				}
 				if(isValid(start))
-					distinctTrails->at(trail).push_back(vec2(start->x, start->y));
+					distinctTrails->at(trail).push_back(Vec2(start->x, start->y));
 				if(curr == 9) {
 					if(!maxHeightVisited->at(start->y).at(start->x)) {
 						score = 1;
@@ -69,7 +62,7 @@ class Pathfinder {
 					}
 				} else {
 					for(auto dir : Directions) {
-						struct vec2 *newPos = (vec2*) malloc(sizeof(vec2));
+						struct Vec2 *newPos = (Vec2*) malloc(sizeof(Vec2));
 						newPos->x = start->x + dir[0];
 						newPos->y = start->y + dir[1];
 						*nextId += 1;
@@ -82,7 +75,7 @@ class Pathfinder {
 			return score;
 		}
 
-		std::string BuildTrailString(std::vector<vec2> *trail) {
+		std::string BuildTrailString(std::vector<Vec2> *trail) {
 			std::string s;
 			for(auto t : *trail) {
 				s.append(std::string(1, (Lines[t.y][t.x])));
@@ -91,7 +84,7 @@ class Pathfinder {
 		}
 
 		std::tuple<long, long> TrailheadsSum() {
-			std::vector<std::vector<vec2>> distinctTrails;
+			std::vector<std::vector<Vec2>> distinctTrails;
 			long sum = 0;
 			long nextId = 0;
 			for(auto zero : ZeroIndices) {

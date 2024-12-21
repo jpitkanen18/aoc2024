@@ -64,7 +64,8 @@
 		"condition_variable": "cpp",
 		"mutex": "cpp",
 		"set": "cpp",
-		"queue": "cpp"
+		"queue": "cpp",
+		"climits": "cpp"
 	},
 	"editor.tabSize": 2
 }

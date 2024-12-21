@@ -15,13 +15,6 @@
 #include "../lib/utils.h"
 #include "../lib/timer.h"
 
-using StringVector = std::vector<std::string>;
-
-struct Vec2 {
-	int x, y;
-	Vec2(int x, int y) : x(x), y(y) {}
-};
-
 enum Direction {
 	UP,
 	DOWN,

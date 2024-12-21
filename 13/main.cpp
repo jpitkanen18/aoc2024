@@ -19,13 +19,6 @@
 #include "../lib/timer.h"
 #include <atomic>
 
-using StringVector = std::vector<std::string>;
-
-struct Vec2 {
-	long x, y;
-	Vec2(long x, long y) : x(x), y(y) {}
-};
-
 using Prize = std::tuple<Vec2, Vec2, Vec2>;
 
 class ClawGenius {

@@ -15,8 +15,6 @@
 #include "../lib/utils.h"
 #include "../lib/timer.h"
 
-using StringVector = std::vector<std::string>;
-
 class Pebbles {
 	std::string Input;
 	std::vector<long> Engravings;

@@ -1,3 +1,4 @@
+#pragma once
 #include <regex>
 #include <vector>
 #include <string>
@@ -8,15 +9,16 @@
 #include <iterator>
 #include <algorithm>
 #include <functional>
-
-using StringVector = std::vector<std::string>;
+#include "./types.h"
 
 class Utils {
 	public:
 		static StringVector loadFile(std::string filePath) {
 			std::ifstream test(filePath);
-			if(!test)
+			if(!test) {
+				printf("Did you forget to pass the filepath? ;D\n");
 				throw std::exception();
+			}
 			std::ifstream inFile(filePath);
 			StringVector fileAsString;
 
@@ -30,5 +32,38 @@ class Utils {
 				inFile.close();
 			}
 			return fileAsString;
+		}
+
+		static Vec2 CoordsFromSmatch(std::smatch &m) {
+			std::regex r("-{0,1}\\d+");
+			std::string input = m.str();
+			Vec2 *vec = (Vec2*)malloc(sizeof(Vec2));
+			int j = 0;
+			for(std::sregex_iterator i = std::sregex_iterator(input.begin(), input.end(), r);
+																i != std::sregex_iterator();
+																++i )
+			{
+					std::smatch m = *i;
+					long coord = atol(m.str().c_str());
+					if(j == 0) {
+						vec->x = coord;
+					} else {
+						vec->y = coord;
+					}
+					j++;
+			}
+			return *vec;
+		}
+
+		static Vec2 Vec2FromRegex(std::string &input, std::regex &r) {
+			Vec2 *vec = (Vec2*)malloc(sizeof(Vec2));
+			for(std::sregex_iterator i = std::sregex_iterator(input.begin(), input.end(), r);
+																i != std::sregex_iterator();
+																++i )
+			{
+					std::smatch m = *i;
+					*vec = CoordsFromSmatch(m);
+			}
+			return *vec;
 		}
 };
